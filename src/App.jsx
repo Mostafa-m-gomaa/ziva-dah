@@ -1,126 +1,88 @@
-import  { useState ,useEffect , Suspense } from 'react'
-import React from 'react'
-import './App.css'
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-// import Nav from './components/Nav';
-// import Home from './components/home/Home';
-import Categories from './components/Categories';
-import { createContext } from 'react';
-// import SubCategory from './components/SubCats';
-// import Product from './components/Product';
-import Footer from './components/Footer';
-import Cart from './components/Cart';
-import toast, { Toaster } from 'react-hot-toast';
-import Special from './components/Special';
-import Contact from './components/Contact';
-import About from './components/About';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import { useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
-
-const SubCategory = React.lazy(() => import('./components/SubCats'));
-const Home = React.lazy(() => import('./components/home/Home'));
-const Nav = React.lazy(() => import('./components/Nav'));
-const Product = React.lazy(() => import('./components/Product'));
-
-
-
+import "./App.css";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import Sidebar from "./layout/Sidebar/Sidebar";
+import { createContext, useEffect, useState } from "react";
+import Login from "./components/login/Login";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Users from "./components/users/Users";
+import Categories from "./components/categories/Categories";
+import Courses from "./components/Courses/Courses";
+import Products from "./components/products/Products";
+import EditProducts from "./components/products/EditPro";
+import EditSub from "./components/Courses/EditSub";
+import Special from "./components/categories/Special";
+import Orders from "./components/categories/Orders";
 
 export const AppContext = createContext();
 
-export const apiUrl = import.meta.env.VITE_API_URL;
-
-
 function App() {
-  const [lang, setLang] = useState('en')
-  const [loader,setLoader] = useState(false)
-  const location =useLocation()
-  const [productIds, setProductIds] = useState(() => {
-    // Retrieve the array from sessionStorage on component mount
+  const [headTitle, setHeadTitle] = useState("تسجيل الدخول");
+  const [login, setLogin] = useState(false);
 
-    const savedProductIds = sessionStorage.getItem('productIds');
-    return savedProductIds ? JSON.parse(savedProductIds) : [];
-  });
+  const [route, setRoute] = useState("https://api.softwave-dev.com/api/v1");
+  const [employee, setEmployee] = useState(false);
 
-  const [productsObj, setProductsObj] = useState(() => {
-    const savedProducts = sessionStorage.getItem('products');
-    return savedProducts ? JSON.parse(savedProducts) : [];
-  });
-  useEffect(() => {
-    sessionStorage.setItem('productIds', JSON.stringify(productIds));
-  }, [productIds]);
-  useEffect(() => {
-    sessionStorage.setItem('products', JSON.stringify(productsObj));
-  }, [productsObj]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
-    AOS.init({
-      duration: 1200, // animation duration in milliseconds
-      once: true, // whether animation should happen only once - while scrolling down
-      // other options
-    });
-  }, []);
-
- 
+    setLogin(sessionStorage.getItem("login"));
+    if (sessionStorage.getItem("role") === "employee") {
+      setEmployee(true);
+    } else {
+      setEmployee(false);
+    }
+  }, [login]);
   return (
-    <AppContext.Provider value={{lang ,setLang ,productIds, setProductIds ,productsObj, setProductsObj , setLoader}}>
-    <>
-    {loader &&     <div className="fixed bg-[#00000078] w-full h-full z-[100] flex justify-center items-center ">
-
-<div class="spinner">
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-</div>
-
-
-
-</div>}
-
-
-<div></div>
-<Toaster />
-   
-  <Suspense fallback={<div className="fixed bg-[#00000078] w-full h-full z-[100] flex justify-center items-center ">
-
-<div class="spinner">
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-<div></div>
-</div>
-
-
-
-</div>}>
-  <Nav />
-<AnimatePresence mode='wait'>
-<Routes location={location} key={location.pathname}>
-         <Route path="/" element={<Home />} />
-         <Route path="/cat/:id" element={<Categories/>} />
-
-         {/* <Route path="/subCat/:id" element={<SubCategory/>} /> */}
-         <Route path="/subCat/:id" element={<SubCategory/>} />
-         <Route path="/product/:id" element={<Product/>} />
-         <Route path="/cart" element={<Cart/>} />
-         <Route path="/special" element={<Special/>} />
-         <Route path="/contact" element={<Contact/>} />
-         <Route path="/about" element={<About/>} />
-
-      </Routes>
-      </AnimatePresence>
-      <Footer />
-  </Suspense>
-  
-    </>
+    <AppContext.Provider
+      value={{
+        headTitle,
+        setHeadTitle,
+        route,
+        login,
+        setLogin,
+        setLoader,
+        employee,
+        setEmployee,
+      }}
+    >
+      <>
+        <div className="app">
+          <ToastContainer />
+          {loader ? (
+            <div className="loader-cont">
+              <div className="banter-loader">
+                <div className="banter-loader__box"></div>
+                <div className="banter-loader__box"></div>
+                <div className="banter-loader__box"></div>
+                <div className="banter-loader__box"></div>
+                <div className="banter-loader__box"></div>
+                <div className="banter-loader__box"></div>
+                <div className="banter-loader__box"></div>
+                <div className="banter-loader__box"></div>
+                <div className="banter-loader__box"></div>
+              </div>
+            </div>
+          ) : null}
+          <Sidebar />
+          <div className="the-content">
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/categories" element={<Categories/>} />
+              <Route path="/SubCategories" element={<Courses/>} />
+              <Route path="/Products" element={<Products/>} />
+              <Route path="/product/:id" element={<EditProducts/>} />
+              <Route path="/sub/:id" element={<EditSub/>} />
+              <Route path="/Special Orders" element={<Special/>} />
+              <Route path="/Orders" element={<Orders/>} />
+             
+            </Routes>
+          </div>
+        </div>
+      </>
     </AppContext.Provider>
-  )
+  );
 }
 
-export default App
+export default App;

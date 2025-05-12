@@ -20,7 +20,7 @@ function App() {
   const [headTitle, setHeadTitle] = useState("تسجيل الدخول");
   const [login, setLogin] = useState(false);
 
-  const [route, setRoute] = useState("https://api.softwave-dev.com/api/v1");
+  const [route, setRoute] = useState("https://store.softwave-dev.com/api/v1");
   const [employee, setEmployee] = useState(false);
 
   const [loader, setLoader] = useState(false);
